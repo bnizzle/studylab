@@ -1,0 +1,33 @@
+{% extends "base_teacher.html" %}
+
+{% block title %}Study Lab - Teacher{%  endblock %}
+
+{% block page_content %}
+<div class="row">
+<div class="col-md-4">
+<h2>Recent Attendance</h2>
+    <table class="table">
+        <tr>
+            <th>Student Id</th>
+            <th>Time Attended</th>
+        </tr>
+    {% for attendance in attendance %}
+        <tr>
+            <td><a href="{{ url_for('student', studentid=attendance.student_id) }}">{{ attendance.student_id }}</a></td>
+            <td>{{ moment(attendance.timestamp).fromNow() }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+</div>
+<div class="col-md-8">
+    <h2>Top 10 Attendance</h2>
+    <table class="table">
+        <tr>
+            <th>Student ID</th>
+            <th>Student Name</th>
+            <th>Times Attended</th>
+        </tr>
+    </table>
+</div>
+</div>
+{% endblock %}

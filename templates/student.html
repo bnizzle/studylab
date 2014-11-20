@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+<h3>Details of </h3>
+<div class="posts">
+    {% for details in details %}
+        <table>
+        <tr>
+            <td>{{ details.first_name }}</td>
+        </tr>
+        <tr>
+            <td>{{ details.surname }}</td>
+        </tr>
+        </table>
+    {% endfor %}
+    {% for student_attendance in student_attendance %}
+    <table>
+        <tr>
+            <td>{{ student_attendance.student_id }}</td>
+            <td>{{ moment(student_attendance.timestamp).fromNow() }}</td>
+        </tr>
+    </table>
+    {% endfor %}
+</div>
+{% endblock %}

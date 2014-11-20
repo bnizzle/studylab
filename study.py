@@ -72,8 +72,9 @@ def index():
 
 @app.route('/teacher')
 def teacher():
-    attendance = db.session.query(Attendance).order_by(Attendance.timestamp.desc())
-    return render_template('teacher.html', attendance=attendance)
+    attendance = db.session.query(Attendance).order_by(Attendance.timestamp.desc()).limit(10)
+    count = db.session.query(Student).order_by(Student.count.desc()).limit(10)
+    return render_template('teacher.html', attendance=attendance, count=count)
 
 @app.route('/teacher/id/<studentid>')
 def student(studentid):

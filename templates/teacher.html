@@ -41,27 +41,14 @@
             <th>Student ID</th>
             <th>Student Name</th>
         </tr>
+        {% for reward in reward %}
         <tr>
-            <td>1234</td>
-            <td>Placeholder</td>
+            <td>{{ reward.student_id }}</td>
+            <td></td>
         </tr>
-        <tr>
-            <td>1234</td>
-            <td>Placeholder</td>
-        </tr>
-        <tr>
-            <td>1234</td>
-            <td>Placeholder</td>
-        </tr>
-        <tr>
-            <td>1234</td>
-            <td>Placeholder</td>
-        </tr>
-        <tr>
-            <td>1234</td>
-            <td>Placeholder</td>
-        </tr>
+            {% endfor %}
     </table>
+
 </div>
 </div>
 {% endblock %}

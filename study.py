@@ -10,13 +10,9 @@ from wtforms.validators import Required
 from flask.ext.moment import Moment
 
 
-basedir = os.path.abspath(os.path.dirname(__file__))
-
-
 app = Flask(__name__)
 
 app.config.from_object("config")
-
 
 
 db = SQLAlchemy(app)
@@ -35,15 +31,14 @@ class Student(db.Model):
     def __repr__(self):
         return '%r' % self.id
 
-    def get_count(self):
-        return self.count
+
 
 class Reward(db.Model):
     __tablename__ = 'reward'
     entry = db.Column(db.Integer,primary_key=True,autoincrement=True)
     student_id = db.Column(db.Integer,index=True)
     timestamp = db.Column(db.DateTime,index=True, default=datetime.now)
-    reward_given = db.Column(db.Integer)
+    reward_given = db.Column(db.Integer, default=0)
 
 
 class Attendance(db.Model):
@@ -72,14 +67,15 @@ def index():
         if db.session.query(Student).filter(Student.id == form.id.data) is not None:
             db.session.query(Student).filter(Student.id == form.id.data).update({'count': Student.count+1})
             db.session.commit()
-            reward_check = db.session.query(Student).filter(Student.id == form.id.data)
-            if (reward_check.count() % 3) == 0:
+            reward_check = db.session.query(Attendance).filter(Attendance.student_id == form.id.data).count()
+            if (reward_check % 3) == 0:
                 reward_add = Reward(student_id=form.id.data)
                 db.session.add(reward_add)
         else:
             flash("Looks like you aren't in the system properly. Please contact the ICT Department.")
         id_add = Attendance(student_id=form.id.data)
         db.session.add(id_add)
+        db.session.commit()
         return redirect(url_for('index'))
     return render_template('index.html', form=form, id=id)
 
@@ -87,8 +83,9 @@ def index():
 @app.route('/teacher')
 def teacher():
     attendance = db.session.query(Attendance).order_by(Attendance.timestamp.desc()).limit(10)
+    reward = db.session.query(Reward).filter(Reward.reward_given != 1).limit(5)
     count = db.session.query(Student).order_by(Student.count.desc()).limit(5)
-    return render_template('teacher.html', attendance=attendance, count=count)
+    return render_template('teacher.html', attendance=attendance, count=count, reward=reward)
 
 @app.route('/teacher/id/<studentid>')
 def student(studentid):

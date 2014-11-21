@@ -1,25 +1,44 @@
-{% extends "base.html" %}
+{% extends "base_teacher.html" %}
 
 {% block page_content %}
-<h3>Details of </h3>
-<div class="posts">
+<div class="row">
+<div class=".col-md-8">
     {% for details in details %}
-        <table>
+    <h3>{{ details.first_name }} details </h3>
+    <table class="table">
         <tr>
-            <td>{{ details.first_name }}</td>
+            <th>Student Name</th>
+            <th>Tutor</th>
+            <th>Year Group</th>
+            <th>Attendance Count</th>
         </tr>
         <tr>
-            <td>{{ details.surname }}</td>
-        </tr>
-        </table>
-    {% endfor %}
-    {% for student_attendance in student_attendance %}
-    <table>
-        <tr>
-            <td>{{ student_attendance.student_id }}</td>
-            <td>{{ moment(student_attendance.timestamp).fromNow() }}</td>
+            <td>{{ details.first_name }} {{ details.surname }}</td>
+            <td>W-AWK</td>
+            <td>YG11</td>
+            <td>{{ details.count }}</td>
+            {% endfor %}
         </tr>
     </table>
-    {% endfor %}
+</div>
+
+<div class=".col-md-4">
+<h4>Latest Student Attendance</h4>
+    <table class="table">
+        <tr>
+            <th>Student ID</th>
+            <th>Attendance time</th>
+        </tr>
+        {% for student_attendance in student_attendance %}
+        <tr>
+            <td>{{ student_attendance.student_id }} </td>
+            <td>{{ moment(student_attendance.timestamp, local=True).fromNow() }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+<div class=".col-mid-4">
+
+</div>
 </div>
 {% endblock %}

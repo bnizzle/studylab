@@ -15,9 +15,8 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
 
-app.config['SECRET_KEY'] = "123456789"
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir,'data.sqlite')
-app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
+app.config.from_object("config")
+
 
 
 db = SQLAlchemy(app)
@@ -32,8 +31,19 @@ class Student(db.Model):
     surname = db.Column(db.String(64), index=True)
     count = db.Column(db.Integer)
 
+
     def __repr__(self):
         return '%r' % self.id
+
+    def get_count(self):
+        return self.count
+
+class Reward(db.Model):
+    __tablename__ = 'reward'
+    entry = db.Column(db.Integer,primary_key=True,autoincrement=True)
+    student_id = db.Column(db.Integer,index=True)
+    timestamp = db.Column(db.DateTime,index=True, default=datetime.now)
+    reward_given = db.Column(db.Integer)
 
 
 class Attendance(db.Model):
@@ -62,6 +72,10 @@ def index():
         if db.session.query(Student).filter(Student.id == form.id.data) is not None:
             db.session.query(Student).filter(Student.id == form.id.data).update({'count': Student.count+1})
             db.session.commit()
+            reward_check = db.session.query(Student).filter(Student.id == form.id.data)
+            if (reward_check.count() % 3) == 0:
+                reward_add = Reward(student_id=form.id.data)
+                db.session.add(reward_add)
         else:
             flash("Looks like you aren't in the system properly. Please contact the ICT Department.")
         id_add = Attendance(student_id=form.id.data)
@@ -73,7 +87,7 @@ def index():
 @app.route('/teacher')
 def teacher():
     attendance = db.session.query(Attendance).order_by(Attendance.timestamp.desc()).limit(10)
-    count = db.session.query(Student).order_by(Student.count.desc()).limit(10)
+    count = db.session.query(Student).order_by(Student.count.desc()).limit(5)
     return render_template('teacher.html', attendance=attendance, count=count)
 
 @app.route('/teacher/id/<studentid>')

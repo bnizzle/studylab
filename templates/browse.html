@@ -1,6 +1,7 @@
 {% extends "base_teacher.html" %}
 
 {% block title %}Study Lab - Browse{%  endblock %}
+{% set active_page = "browse" %}
 
 {% block page_content %}
         <div class="navbar" role="navigation">
@@ -18,8 +19,12 @@
         <button type="submit" class="btn btn-default">Submit</button>
       </form>
         </ul>
-
     </div>
+    <table class="table">
+        {% for student_items in student_items %}
+        <tr>{{ student_items.id }}</tr>
+        {% endfor %}
+    </table>
 </div>
 </div>
 

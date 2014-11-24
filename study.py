@@ -1,62 +1,18 @@
-import os
-import json
-from flask import Flask, render_template, session, redirect, url_for, flash
+from flask import Flask, render_template, session, redirect, url_for, flash, g
 from flask.ext.bootstrap import Bootstrap
-from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.wtf import Form
-from wtforms import IntegerField, SubmitField
-from datetime import datetime, date
-from wtforms.validators import Required
+from flask.ext.sqlalchemy import SQLAlchemy, Pagination
 from flask.ext.moment import Moment
+from models import *
 
 
 app = Flask(__name__)
 
 app.config.from_object("config")
-
+from config import POSTS_PER_PAGE
 
 db = SQLAlchemy(app)
 bootstrap = Bootstrap(app)
 moment = Moment(app)
-
-
-class Student(db.Model):
-    __tablename__ = 'students'
-    id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String(64), index=True)
-    surname = db.Column(db.String(64), index=True)
-    count = db.Column(db.Integer)
-
-
-    def __repr__(self):
-        return '%r' % self.id
-
-
-
-class Reward(db.Model):
-    __tablename__ = 'reward'
-    entry = db.Column(db.Integer,primary_key=True,autoincrement=True)
-    student_id = db.Column(db.Integer,index=True)
-    timestamp = db.Column(db.DateTime,index=True, default=datetime.now)
-    reward_given = db.Column(db.Integer, default=0)
-
-
-class Attendance(db.Model):
-    __tablename__ = 'attendance'
-    entry = db.Column(db.Integer,primary_key=True)
-    student_id = db.Column(db.Integer,index=True)
-    timestamp = db.Column(db.DateTime,index=True, default=datetime.now)
-
-    def __init__(self, student_id):
-        self.student_id = student_id
-
-    def __repr__(self):
-        return '%r' % (self.student_id)
-
-
-class IdForm(Form):
-    id = IntegerField('Please enter your Student ID', validators=[Required()])
-    submit = SubmitField('Submit')
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -93,9 +49,13 @@ def student(studentid):
     student_attendance = db.session.query(Attendance).filter(Attendance.student_id == studentid).order_by(Attendance.timestamp.desc()).all()
     return render_template("student.html", details=details, student_attendance=student_attendance)
 
-@app.route('/teacher/browse')
-def browse():
-    return render_template("browse.html")
+@app.route('/teacher/browse', methods=['GET', 'POST'])
+@app.route('/teacher/browse/<int:page>', methods=['GET','POST'])
+def browse(page=1):
+    student_query = Student.query.paginate(page, POSTS_PER_PAGE, False)
+    total = student_query.total
+    student_items = student_query.items
+    return render_template("browse.html", student_items=student_items)
 
 @app.route('/teacher/rewards')
 def rewards():

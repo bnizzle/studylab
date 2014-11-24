@@ -2,9 +2,11 @@
 
 {% block title %}Study Lab{%  endblock %}
 
+
 {% block scripts %}
 {{ super() }}
 {{ moment.include_moment() }}
+
 {% endblock %}
 
 {% block styles %}
@@ -27,9 +29,9 @@
     </div>
     <div class="navbar-collapse collapse">
         <ul class="nav navbar-nav">
-            <li><a href="/teacher">Home</a></li>
-            <li><a href="/teacher/browse">Browse</a></li>
-            <li><a href="/teacher/rewards">Rewards</a></li>
+            <li><a id="teacher" class="navbar-nav-item" href="{{ url_for('teacher') }}">Home</a></li>
+            <li><a id="browse" class="navbar-nav-item" href="{{ url_for('browse') }}">Browse</a></li>
+            <li><a id="rewards" class="navbar-nav-item" href="{{ url_for('rewards') }}">Rewards</a></li>
         </ul>
     </div>
 </div>
@@ -40,4 +42,8 @@
 <div class="container">
     {% block page_content %}{% endblock %}
 </div>
+<script>
+  $(document).ready(function() {
+  $("#{{request.endpoint}}").addClass("active"); })
+</script>
 {% endblock %}

@@ -29,7 +29,7 @@
         </tr>
         {% for count in count %}
             <tr>
-            <td>{{ count.id }}</td>
+            <td><a href="{{ url_for('student', studentid=count.id) }}">{{ count.id }}</a></td>
             <td>{{ count.first_name }} {{ count.surname }}</td>
             <td>{{ count.count }}</td>
             </tr>
@@ -43,7 +43,7 @@
         </tr>
         {% for reward in reward %}
         <tr>
-            <td>{{ reward.student_id }}</td>
+            <td><a href="{{ url_for('student', studentid=reward.student_id) }}">{{ reward.student_id }}</a></td>
             <td></td>
         </tr>
             {% endfor %}

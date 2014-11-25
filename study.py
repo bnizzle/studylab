@@ -3,16 +3,27 @@ from flask.ext.bootstrap import Bootstrap
 from flask.ext.sqlalchemy import SQLAlchemy, Pagination
 from flask.ext.moment import Moment
 from models import *
+from flask.ext.mail import Mail
 
 
 app = Flask(__name__)
 
+# Set config file and import config settings
 app.config.from_object("config")
-from config import POSTS_PER_PAGE
+from config import *
 
+# Init all the things!
 db = SQLAlchemy(app)
 bootstrap = Bootstrap(app)
 moment = Moment(app)
+mail = Mail(app)
+
+
+def send_email(to, subject, template, **kwargs):
+    msg = Message(app.config['STUDY_MAIL_SUBJECT_PREFIX'] + subject, sender=app.config['STUDY_MAIL_SENDER'],recipients=[to])
+    msg.body = render_template(template + '.txt', **kwargs)
+    msg.html = render_template(template + '.html', **kwargs)
+    mail.send(msg)
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -53,7 +64,6 @@ def student(studentid):
 @app.route('/teacher/browse/<int:page>', methods=['GET','POST'])
 def browse(page=1):
     student_query = Student.query.paginate(page, POSTS_PER_PAGE, False)
-    total = student_query.total
     student_items = student_query.items
     return render_template("browse.html", student_items=student_items)
 

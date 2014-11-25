@@ -15,7 +15,6 @@ class Student(db.Model):
     year_group = db.Column(db.Integer, index=True)
     count = db.Column(db.Integer)
 
-
     def __repr__(self):
         return '%r' % self.id
 
